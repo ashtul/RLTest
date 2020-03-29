@@ -495,6 +495,21 @@ class Env:
         if self.isEnterpiseCluster():
             self.skip()
 
+    def isRequiredRedisVersion(self, ver):
+        server_ver = self.env.cmd('info server').split('\r\n')[1].split(':', 1)[-1]
+        server_ver_list = server_ver.split('.')
+        ver_list = ver.split('.')
+        for i in range(3):
+            if ver_list[i] > server_ver_list[i]:
+                return False
+            elif ver_list[i] < server_ver_list[i]:
+                return True
+        return True
+
+    def skipRequiredRedisVersion(self, ver):
+        if not self.isRequiredRedisVersion(ver):
+            self.skip()
+
     _mm = {
         'assertEquals': assertEqual,
         'assertListEqual': assertEqual,
